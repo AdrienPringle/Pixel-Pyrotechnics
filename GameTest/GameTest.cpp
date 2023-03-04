@@ -5,14 +5,31 @@
 //------------------------------------------------------------------------
 #include <windows.h> 
 #include <math.h>  
+#include <memory>
 //------------------------------------------------------------------------
-#include "app\app.h"
+#include "App\app.h"
+#include "src\src.h"
+
 //------------------------------------------------------------------------
+
+unsigned int HEX_HEIGHT = 146;
+unsigned int HEX_DEPTH = 84;
+unsigned int HEX_SIDE = 59;
+unsigned int HEX_FACE = 120;
+//238 for full length
+//168 for full height (almost exactly 1/sqrt(2) ratio)
+
+float total_time = 0.0f;
 
 //------------------------------------------------------------------------
 // Eample data....
 //------------------------------------------------------------------------
 CSimpleSprite *testSprite;
+
+std::shared_ptr<GameObject> root;
+std::shared_ptr<SpriteObject> hex1;
+std::shared_ptr<SpriteObject> hex2;
+
 enum
 {
 	ANIM_FORWARDS,
@@ -37,6 +54,18 @@ void Init()
 	testSprite->CreateAnimation(ANIM_RIGHT, speed, { 16,17,18,19,20,21,22,23 });
 	testSprite->CreateAnimation(ANIM_FORWARDS, speed, { 24,25,26,27,28,29,30,31 });
 	testSprite->SetScale(1.0f);
+
+	root = std::shared_ptr<GameObject>(new GameObject());
+	root->SetLocalPosition(400.0f, 400.0f);
+
+	CSimpleSprite *hexSprite = App::CreateSprite("..\\assets\\spritesheet.bmp", 31, 1);
+	CSimpleSprite *hexSprite2 = App::CreateSprite("..\\assets\\spritesheet.bmp", 31, 1);
+
+	hex1 = std::make_shared<SpriteObject>(1, 0.0f, 0.0f, root, std::unique_ptr<CSimpleSprite>(hexSprite));
+	root->AddChild(hex1);
+	hex2 = std::make_shared<SpriteObject>(1, 0.0f, 146.0f, root, std::unique_ptr<CSimpleSprite>(hexSprite2));
+	root->AddChild(hex2);
+
 	//------------------------------------------------------------------------
 }
 
@@ -46,9 +75,22 @@ void Init()
 //------------------------------------------------------------------------
 void Update(float deltaTime)
 {
+	total_time += deltaTime;
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
 	testSprite->Update(deltaTime);
+
+	int max_frames = 30;
+	int cycles_till_full = 6;
+	float degrees = fmod( total_time / 5.0f , 360);
+	float interp =  degrees / 360.0f;
+	int frame = (int) (interp * cycles_till_full * max_frames) % max_frames;
+
+	float ychange = HEX_HEIGHT - 0.5;
+	float xchange = ychange * sqrt(2);
+	// hexSprite2->SetPosition(400.0f + xchange * sin(interp * 2 * 3.14159), 400.0f - ychange * cos(interp * 2 * 3.14159));
+	hex2->SetLocalPosition(xchange * sin(interp * 2 * 3.14159), ychange * cos(interp * 2 * 3.14159));
+
 	if (App::GetController().GetLeftThumbStickX() > 0.5f)
 	{
 		testSprite->SetAnimation(ANIM_RIGHT);
@@ -108,6 +150,8 @@ void Update(float deltaTime)
 	{
 		App::PlaySound(".\\TestData\\Test.wav");
 	}
+
+	root->Update(deltaTime);
 }
 
 //------------------------------------------------------------------------
@@ -119,6 +163,8 @@ void Render()
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
 	testSprite->Draw();
+	root->Draw();
+
 	//------------------------------------------------------------------------
 
 	//------------------------------------------------------------------------
