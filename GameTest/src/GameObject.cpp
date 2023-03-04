@@ -1,17 +1,19 @@
 #include "stdafx.h"
 #include "GameObject.h"
 
-#include <set>
+#include <vector>
 #include <memory>
+#include <algorithm> 
 
 GameObject::GameObject(void)
 {
     this->SetScale(1.0f);
     this->SetLocalPosition(0, 0);
+    z_index = 0;
     parent = std::weak_ptr<GameObject>();
 }
 
-GameObject::GameObject(float scale, float xpos, float ypos, std::weak_ptr<GameObject> parent) : parent(parent)
+GameObject::GameObject(float scale, float xpos, float ypos, int z_index, std::weak_ptr<GameObject> parent) : parent(parent), z_index(z_index)
 {
     this->SetScale(scale);
     this->SetLocalPosition(xpos, ypos);
@@ -27,6 +29,7 @@ void GameObject::Update(float dt)
 
 void GameObject::Draw()
 {
+    std::sort(children.begin(), children.end(), CMP_STRUCT);
     for (auto c : children)
     {
         c->Draw();
@@ -35,7 +38,11 @@ void GameObject::Draw()
 
 void GameObject::AddChild(std::shared_ptr<GameObject> child)
 {
-    children.insert(child);
+    children.push_back(child);
+}
+
+void GameObject::SetZindex(int i){
+    z_index = i;
 }
 
 void GameObject::SetLocalPosition(float x, float y)
@@ -52,6 +59,7 @@ void GameObject::SetScale(float s)
 
     this->PropagateGlobalScale();
 }
+
 
 void GameObject::PropagateGlobalPos()
 {

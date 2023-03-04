@@ -3,8 +3,8 @@
 //------------------------------------------------------------------------
 #include "stdafx.h"
 //------------------------------------------------------------------------
-#include <windows.h> 
-#include <math.h>  
+#include <windows.h>
+#include <math.h>
 #include <memory>
 //------------------------------------------------------------------------
 #include "App\app.h"
@@ -16,8 +16,8 @@ unsigned int HEX_HEIGHT = 146;
 unsigned int HEX_DEPTH = 84;
 unsigned int HEX_SIDE = 59;
 unsigned int HEX_FACE = 120;
-//238 for full length
-//168 for full height (almost exactly 1/sqrt(2) ratio)
+// 238 for full length
+// 168 for full height (almost exactly 1/sqrt(2) ratio)
 
 float total_time = 0.0f;
 
@@ -49,10 +49,10 @@ void Init()
 	testSprite = App::CreateSprite(".\\TestData\\Test.bmp", 8, 4);
 	testSprite->SetPosition(400.0f, 400.0f);
 	float speed = 1.0f / 15.0f;
-	testSprite->CreateAnimation(ANIM_BACKWARDS, speed, { 0,1,2,3,4,5,6,7 });
-	testSprite->CreateAnimation(ANIM_LEFT, speed, { 8,9,10,11,12,13,14,15 });
-	testSprite->CreateAnimation(ANIM_RIGHT, speed, { 16,17,18,19,20,21,22,23 });
-	testSprite->CreateAnimation(ANIM_FORWARDS, speed, { 24,25,26,27,28,29,30,31 });
+	testSprite->CreateAnimation(ANIM_BACKWARDS, speed, {0, 1, 2, 3, 4, 5, 6, 7});
+	testSprite->CreateAnimation(ANIM_LEFT, speed, {8, 9, 10, 11, 12, 13, 14, 15});
+	testSprite->CreateAnimation(ANIM_RIGHT, speed, {16, 17, 18, 19, 20, 21, 22, 23});
+	testSprite->CreateAnimation(ANIM_FORWARDS, speed, {24, 25, 26, 27, 28, 29, 30, 31});
 	testSprite->SetScale(1.0f);
 
 	root = std::shared_ptr<GameObject>(new GameObject());
@@ -61,9 +61,9 @@ void Init()
 	CSimpleSprite *hexSprite = App::CreateSprite("..\\assets\\spritesheet.bmp", 31, 1);
 	CSimpleSprite *hexSprite2 = App::CreateSprite("..\\assets\\spritesheet.bmp", 31, 1);
 
-	hex1 = std::make_shared<SpriteObject>(1, 0.0f, 0.0f, root, std::unique_ptr<CSimpleSprite>(hexSprite));
+	hex1 = std::shared_ptr<SpriteObject>(new SpriteObject(1, 0.0f, 0.0f, 0, root, std::unique_ptr<CSimpleSprite>(hexSprite)));
 	root->AddChild(hex1);
-	hex2 = std::make_shared<SpriteObject>(1, 0.0f, 146.0f, root, std::unique_ptr<CSimpleSprite>(hexSprite2));
+	hex2 = std::shared_ptr<SpriteObject>(new SpriteObject(1, 0.0f, 146.0f, 0, root, std::unique_ptr<CSimpleSprite>(hexSprite2)));
 	root->AddChild(hex2);
 
 	//------------------------------------------------------------------------
@@ -82,14 +82,22 @@ void Update(float deltaTime)
 
 	int max_frames = 30;
 	int cycles_till_full = 6;
-	float degrees = fmod( total_time / 5.0f , 360);
-	float interp =  degrees / 360.0f;
-	int frame = (int) (interp * cycles_till_full * max_frames) % max_frames;
+	float degrees = fmod(total_time / 5.0f, 360);
+	float interp = degrees / 360.0f;
+	int frame = (int)(interp * cycles_till_full * max_frames) % max_frames;
 
-	float ychange = HEX_HEIGHT - 0.5;
+	float ychange = HEX_HEIGHT;
 	float xchange = ychange * sqrt(2);
-	// hexSprite2->SetPosition(400.0f + xchange * sin(interp * 2 * 3.14159), 400.0f - ychange * cos(interp * 2 * 3.14159));
-	hex2->SetLocalPosition(xchange * sin(interp * 2 * 3.14159), ychange * cos(interp * 2 * 3.14159));
+
+	float newx = xchange * sin(interp * 2 * 3.14159);
+	float newy = -ychange * cos(interp * 2 * 3.14159);
+	hex2->SetLocalPosition(newx, newy);
+	root->SetScale(sin(interp * 2 * 3.14159) / 4 + 1);
+
+	hex2->SetZindex((int) -newy);
+
+	hex2->SetFrame(frame);
+	hex1->SetFrame(frame);
 
 	if (App::GetController().GetLeftThumbStickX() > 0.5f)
 	{
@@ -155,11 +163,11 @@ void Update(float deltaTime)
 }
 
 //------------------------------------------------------------------------
-// Add your display calls here (DrawLine,Print, DrawSprite.) 
-// See App.h 
+// Add your display calls here (DrawLine,Print, DrawSprite.)
+// See App.h
 //------------------------------------------------------------------------
 void Render()
-{	
+{
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
 	testSprite->Draw();
@@ -183,13 +191,13 @@ void Render()
 	for (int i = 0; i < 20; i++)
 	{
 
-		float sx = 200 + sinf(a + i * 0.1f)*60.0f;
-		float sy = 200 + cosf(a + i * 0.1f)*60.0f;
-		float ex = 700 - sinf(a + i * 0.1f)*60.0f;
-		float ey = 700 - cosf(a + i * 0.1f)*60.0f;
+		float sx = 200 + sinf(a + i * 0.1f) * 60.0f;
+		float sy = 200 + cosf(a + i * 0.1f) * 60.0f;
+		float ex = 700 - sinf(a + i * 0.1f) * 60.0f;
+		float ey = 700 - cosf(a + i * 0.1f) * 60.0f;
 		g = (float)i / 20.0f;
 		b = (float)i / 20.0f;
-		App::DrawLine(sx, sy, ex, ey,r,g,b);
+		App::DrawLine(sx, sy, ex, ey, r, g, b);
 	}
 }
 //------------------------------------------------------------------------
@@ -197,7 +205,7 @@ void Render()
 // Just before the app exits.
 //------------------------------------------------------------------------
 void Shutdown()
-{	
+{
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
 	delete testSprite;
