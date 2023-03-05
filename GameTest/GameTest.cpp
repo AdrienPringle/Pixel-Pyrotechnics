@@ -12,13 +12,6 @@
 
 //------------------------------------------------------------------------
 
-unsigned int HEX_HEIGHT = 146;
-unsigned int HEX_DEPTH = 84;
-unsigned int HEX_SIDE = 59;
-unsigned int HEX_FACE = 120;
-// 238 for full length
-// 168 for full height (almost exactly 1/sqrt(2) ratio)
-
 float total_time = 0.0f;
 
 //------------------------------------------------------------------------
@@ -27,8 +20,7 @@ float total_time = 0.0f;
 CSimpleSprite *testSprite;
 
 std::shared_ptr<GameObject> root;
-std::shared_ptr<SpriteObject> hex1;
-std::shared_ptr<SpriteObject> hex2;
+std::shared_ptr<LevelObject> lvl;
 
 enum
 {
@@ -58,13 +50,9 @@ void Init()
 	root = std::shared_ptr<GameObject>(new GameObject());
 	root->SetLocalPosition(400.0f, 400.0f);
 
-	CSimpleSprite *hexSprite = App::CreateSprite("..\\assets\\spritesheet.bmp", 31, 1);
-	CSimpleSprite *hexSprite2 = App::CreateSprite("..\\assets\\spritesheet.bmp", 31, 1);
-
-	hex1 = std::shared_ptr<SpriteObject>(new SpriteObject(1, 0.0f, 0.0f, 0, root, std::unique_ptr<CSimpleSprite>(hexSprite)));
-	root->AddChild(hex1);
-	hex2 = std::shared_ptr<SpriteObject>(new SpriteObject(1, 0.0f, 146.0f, 0, root, std::unique_ptr<CSimpleSprite>(hexSprite2)));
-	root->AddChild(hex2);
+	lvl = std::shared_ptr<LevelObject>(new LevelObject(1.0f, 0.0f, 0.0f, 0, root));
+	lvl->LoadLevel(Level::LEVEL1);
+	root->AddChild(lvl);
 
 	//------------------------------------------------------------------------
 }
@@ -80,24 +68,11 @@ void Update(float deltaTime)
 	// Example Sprite Code....
 	testSprite->Update(deltaTime);
 
-	int max_frames = 30;
-	int cycles_till_full = 6;
-	float degrees = fmod(total_time / 5.0f, 360);
-	float interp = degrees / 360.0f;
-	int frame = (int)(interp * cycles_till_full * max_frames) % max_frames;
+	float degrees = fmod(total_time / 10.0f, 360);
 
-	float ychange = HEX_HEIGHT;
-	float xchange = ychange * sqrt(2);
+	lvl->SetAngle(degrees);
+	root->SetScale(sin(degrees * 2 * 3.14159 / 360) / 10 + 0.4f);
 
-	float newx = xchange * sin(interp * 2 * 3.14159);
-	float newy = -ychange * cos(interp * 2 * 3.14159);
-	hex2->SetLocalPosition(newx, newy);
-	root->SetScale(sin(interp * 2 * 3.14159) / 4 + 1);
-
-	hex2->SetZindex((int) -newy);
-
-	hex2->SetFrame(frame);
-	hex1->SetFrame(frame);
 
 	if (App::GetController().GetLeftThumbStickX() > 0.5f)
 	{
@@ -182,23 +157,23 @@ void Render()
 
 	//------------------------------------------------------------------------
 	// Example Line Drawing.
-	//------------------------------------------------------------------------
-	static float a = 0.0f;
-	float r = 1.0f;
-	float g = 1.0f;
-	float b = 1.0f;
-	a += 0.1f;
-	for (int i = 0; i < 20; i++)
-	{
+	// //------------------------------------------------------------------------
+	// static float a = 0.0f;
+	// float r = 1.0f;
+	// float g = 1.0f;
+	// float b = 1.0f;
+	// a += 0.1f;
+	// for (int i = 0; i < 20; i++)
+	// {
 
-		float sx = 200 + sinf(a + i * 0.1f) * 60.0f;
-		float sy = 200 + cosf(a + i * 0.1f) * 60.0f;
-		float ex = 700 - sinf(a + i * 0.1f) * 60.0f;
-		float ey = 700 - cosf(a + i * 0.1f) * 60.0f;
-		g = (float)i / 20.0f;
-		b = (float)i / 20.0f;
-		App::DrawLine(sx, sy, ex, ey, r, g, b);
-	}
+	// 	float sx = 200 + sinf(a + i * 0.1f) * 60.0f;
+	// 	float sy = 200 + cosf(a + i * 0.1f) * 60.0f;
+	// 	float ex = 700 - sinf(a + i * 0.1f) * 60.0f;
+	// 	float ey = 700 - cosf(a + i * 0.1f) * 60.0f;
+	// 	g = (float)i / 20.0f;
+	// 	b = (float)i / 20.0f;
+	// 	App::DrawLine(sx, sy, ex, ey, r, g, b);
+	// }
 }
 //------------------------------------------------------------------------
 // Add your shutdown code here. Called when the APP_QUIT_KEY is pressed.

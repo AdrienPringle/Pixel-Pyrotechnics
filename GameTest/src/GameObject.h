@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 
-class GameObject
+class GameObject : public std::enable_shared_from_this<GameObject>
 {
 public:
     GameObject(void);
@@ -13,7 +13,7 @@ public:
     virtual void Update(float dt);
     virtual void Draw();
     virtual void AddChild(std::shared_ptr<GameObject> child);
-    
+
     void SetLocalPosition(float x, float y);
     void SetScale(float s);
     void SetZindex(int i);
@@ -26,7 +26,8 @@ protected:
         {
             int z_l = lhs->GetZindex();
             int z_r = rhs->GetZindex();
-            if(z_l == z_r) return lhs.get() < rhs.get();
+            if (z_l == z_r)
+                return lhs.get() < rhs.get();
             return z_l < z_r;
         }
     } CMP_STRUCT;
@@ -43,7 +44,8 @@ protected:
     std::vector<std::shared_ptr<GameObject>> children;
     std::weak_ptr<GameObject> parent;
 
-    int GetZindex() { return z_index; }
+    virtual int GetZindex() { return z_index; }
+
     float GetScale() const { return scale; }
     void GetGlobalPosition(float &x, float &y)
     {

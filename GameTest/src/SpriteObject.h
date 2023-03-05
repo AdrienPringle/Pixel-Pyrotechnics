@@ -4,7 +4,6 @@
 #include "GameObject.h"
 #include "..\App\app.h"
 
-#include <set>
 #include <memory>
 
 class SpriteObject : public GameObject

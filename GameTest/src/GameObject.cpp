@@ -65,7 +65,7 @@ void GameObject::PropagateGlobalPos()
 {
     if (std::shared_ptr<GameObject> p = parent.lock())
     {
-        float scale = p->GetScale();
+        float scale = p->global_scale;
         p->GetGlobalPosition(global_xpos, global_ypos);
 
         global_xpos += scale * xpos;
@@ -88,7 +88,7 @@ void GameObject::PropagateGlobalScale()
 {
     if (std::shared_ptr<GameObject> p = parent.lock())
     {
-        global_scale = scale * p->GetScale();
+        global_scale = scale * p->global_scale;
     }
     else
     {
