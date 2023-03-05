@@ -29,3 +29,8 @@ void SpriteObject::SetFrame(unsigned int f)
 {
     sprite->SetFrame(f);
 }
+
+void SpriteObject::SetAnimation(int id)
+{
+    sprite->SetAnimation(id);
+}

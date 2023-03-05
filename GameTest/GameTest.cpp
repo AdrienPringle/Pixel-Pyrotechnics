@@ -137,19 +137,12 @@ void MoveToHighestValidManPos(int x, int y, int z) {
 	std::shared_ptr<Item3D> tmp;
 	while(!lvl->GetBlockAt(x, y-1, z, tmp)){
 		if(y <= 1) {
-			lvl->UpdateManPos(x, -1, z);
+			lvl->UpdateManPos(x, -1, z, true);
 			return;
 		}
 		y--;
 	}
-	lvl->UpdateManPos(x,y,z);
-
-	if (lvl->GetBlockTypeAt(x,y-1,z) == Level::BlockType::door){
-		current_level += 1;
-		current_level %= Level::levels_size;
-
-		lvl->LoadLevel(Level::levels[current_level]);
-	}
+	lvl->UpdateManPos(x,y,z, true);
 }
 
 void HandleBomb()
@@ -194,6 +187,7 @@ void HandleBomb()
 		// = = = 
 		std::shared_ptr<Item3D> tmp;
 		if (bomb_y != man_y){
+			lvl->UpdateManPos(man_x, man_y, man_z, false);
 			return;
 		}
 		if (dx == 0 && dz == 0) {
@@ -215,9 +209,23 @@ void HandleBomb()
 	}
 }
 
+void HandleEnd(){
+	if (lvl->GetLevelState() != LevelState::input) return;
+	
+	int man_x, man_y, man_z;
+	lvl->GetManPos(man_x, man_y, man_z);
+	if (lvl->GetBlockTypeAt(man_x,man_y-1,man_z) == Level::BlockType::door){
+		current_level += 1;
+		current_level %= Level::levels_size;
+
+		lvl->LoadLevel(Level::levels[current_level]);
+	}
+}
+
 void GameLogic()
 {
 	HandleBomb();
+	HandleEnd();
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, true))
 	{
 		lvl->RotateLeft();
@@ -291,7 +299,7 @@ void Render()
 	char buffer[50];
 	std::snprintf(buffer, 50, "mouse x:%d y:%d \n man: x:%d y:%d", (int)mouse_x, (int)mouse_y, (int)man_screen_x, (int)man_screen_y);
 	App::Print(50, 50, buffer);
-	
+
 	App::GetMousePos(mouse_x, mouse_y);
 
 	//------------------------------------------------------------------------

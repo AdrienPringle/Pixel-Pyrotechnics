@@ -40,7 +40,7 @@ public:
     void RotateLeft();
     void RotateRight();
 
-    void UpdateManPos(int x, int y, int z);
+    void UpdateManPos(int x, int y, int z, bool move);
     void UpdateBombPos(int x, int y, int z, bool is_valid);
     void ReduceBarrelCount() { barrel_count--; }
 
@@ -60,6 +60,7 @@ protected:
     float angle;
     int goal_angle; // 0 to 3 (every 90 degrees)
 
+    void HandleTransition(float dt);
     void SetAngle(float a);
     void AddBlock(int x, int y, int z, int type);
     void AddMan(int x, int y, int z);
@@ -71,6 +72,7 @@ protected:
     int barrel_count;
 
     bool bomb_valid;
+    bool man_move;
     int bomb_x, bomb_y, bomb_z;
     int man_x, man_y, man_z;
     int man_x_old, man_y_old, man_z_old;

@@ -18,6 +18,45 @@ float sigmoid(float x)
     return x / (1 + abs(x));
 }
 
+void LevelObject::HandleTransition(float dt){
+    this->transition_interp += dt / 400;
+
+    if (this->transition_interp >= 1)
+    {
+        this->transition_interp = 1;
+        this->level_state = LevelState::input;
+    }
+    
+    const int bomb_anim_len = 12;
+    int bomb_anim[bomb_anim_len] = {2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 0, 0 };
+    this->bomb_model->SetFrame(bomb_anim[(int)(this->transition_interp * bomb_anim_len)]);
+
+    float x, y, z;
+    if (!this->man_move) {
+        x = man_x;
+        y = man_y;
+        z = man_z;
+    }
+    else if (this->transition_interp < 0.75)
+    {
+        float i = transition_interp / 0.75f;
+        x = man_x_old + i * (man_x - man_x_old);
+        y = man_y_old + sqrt(i) * 2;
+        z = man_z_old + i * (man_z - man_z_old);
+    }
+    else
+    {
+        float i = (transition_interp - 0.75f) / 0.25f;
+        x = man_x;
+        y = man_y_old + 2 + i*i * (man_y - man_y_old - 2);
+        z = man_z;
+    }
+
+    float blockx, blocky, blockz;
+    this->TileToWorldCoords(x, y, z, blockx, blocky, blockz);
+    this->man_model->Set3Dposition(blockx, blocky, blockz);
+}
+
 void LevelObject::Update(float dt)
 {
     float diff_angle = this->angle - (90.0f * this->goal_angle);
@@ -35,6 +74,11 @@ void LevelObject::Update(float dt)
         this->SetAngle(90.0f * this->goal_angle);
     }
 
+    if (level_state == LevelState::transition)
+    {
+        this->HandleTransition(dt);
+    }
+
     GameObject::Update(dt);
 }
 
@@ -42,13 +86,15 @@ void LevelObject::LoadLevel(Level::LEVEL l)
 {
     assert(l.x * l.y * l.z <= LEVEL_BUFFER_SIZE);
 
-    level = l;
+    this->level = l;
     this->children.clear();
-    level_state = LevelState::input;
-    barrel_count = 0;
-    this->SetScale(level.scale);
+    this->level_state = LevelState::input;
+    this->barrel_count = 0;
     this->goal_angle = level.angle % 4;
     this->angle = 90.0f * goal_angle;
+    this->transition_interp = 0;
+
+    this->SetScale(level.scale);
 
     this->AddBomb();
 
@@ -106,7 +152,7 @@ void LevelObject::AddBomb()
     // testSprite = App::CreateSprite(".\\TestData\\Test.bmp", 8, 4);
     // testSprite->SetPosition(400.0f, 400.0f);
     // float speed = 1.0f / 15.0f;
-    sprite->CreateAnimation(0, 1 / 8.0f, {5, 6, 7, 8, 7, 6, 5, 0});
+    // sprite->CreateAnimation(0, 1 / 15.0f, {2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 0 });
     // sprite->SetAnimation(0);
     // testSprite->CreateAnimation(ANIM_LEFT, speed, {8, 9, 10, 11, 12, 13, 14, 15});
     // testSprite->CreateAnimation(ANIM_RIGHT, speed, {16, 17, 18, 19, 20, 21, 22, 23});
@@ -212,7 +258,8 @@ bool LevelObject::GetBlockAt(int x, int y, int z, std::shared_ptr<Item3D> &block
         return false;
 
     int i = GetBufferIndex(x, y, z);
-    if(auto tmp = this->level_buffer[i].lock()){
+    if (auto tmp = this->level_buffer[i].lock())
+    {
         block = tmp;
         return true;
     }
@@ -255,7 +302,7 @@ void LevelObject::GetManPos(int &x, int &y, int &z)
     z = man_z;
 }
 
-void LevelObject::UpdateManPos(int x, int y, int z)
+void LevelObject::UpdateManPos(int x, int y, int z, bool move)
 {
     man_x_old = man_x;
     man_y_old = man_y;
@@ -265,14 +312,19 @@ void LevelObject::UpdateManPos(int x, int y, int z)
     man_y = y;
     man_z = z;
 
-    float blockx, blocky, blockz;
-    this->TileToWorldCoords(x, y, z, blockx, blocky, blockz);
-
-    this->man_model->Set3Dposition(blockx, blocky, blockz);
+    // float blockx, blocky, blockz;
+    // this->TileToWorldCoords(x, y, z, blockx, blocky, blockz);
+    // this->man_model->Set3Dposition(blockx, blocky, blockz);
+    this->level_state = LevelState::transition;
+    this->transition_interp = 0.0f;
+    this->man_move = move;
 }
 
 void LevelObject::UpdateBombPos(int x, int y, int z, bool is_valid)
 {
+    if (this->level_state == LevelState::transition){
+        return;
+    }
     if (!is_valid)
     {
         this->bomb_model->SetFrame(0);

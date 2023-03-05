@@ -15,6 +15,7 @@ public:
     void Draw() override;
 
     void SetFrame(unsigned int f);
+    void SetAnimation(int id);
 
 protected:
     float sprite_scale;
