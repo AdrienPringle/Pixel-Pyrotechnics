@@ -50,10 +50,10 @@ void Init()
 
 	root = std::shared_ptr<GameObject>(new GameObject());
 	root->SetLocalPosition(400.0f, 400.0f);
-	root->SetScale(0.75f);
+	root->SetScale(1.0f);
 
 	lvl = std::shared_ptr<LevelObject>(new LevelObject(1.0f, 0.0f, 0.0f, 0, root));
-	lvl->LoadLevel(Level::LEVEL1);
+	lvl->LoadLevel(Level::TUTORIAL_2);
 	root->AddChild(lvl);
 }
 
@@ -182,18 +182,21 @@ void HandleBomb()
 		//     x
 		// o = =
 		// = = = 
-
+		std::shared_ptr<Item3D> tmp;
+		if (bomb_y != man_y){
+			return;
+		}
 		if (dx == 0 && dz == 0) {
 			MoveToHighestValidManPos(man_x, man_y, man_z);
 			return;
 		}
 
-		if (lvl->GetBlockTypeAt(man_x - dx, bomb_y + 1, man_z - dz) != Level::BlockType::air){
+		if (lvl->GetBlockAt(man_x - dx, bomb_y + 1, man_z - dz, tmp)){
 			MoveToHighestValidManPos(man_x, man_y, man_z);
 			return;
 		}
 
-		if (lvl->GetBlockTypeAt(man_x - 2*dx, bomb_y + 1, man_z - 2*dz) != Level::BlockType::air){
+		if (lvl->GetBlockAt(man_x - 2*dx, bomb_y + 1, man_z - 2*dz, tmp)){
 			MoveToHighestValidManPos(man_x - dx, man_y + 1, man_z - dz);
 			return;
 		}

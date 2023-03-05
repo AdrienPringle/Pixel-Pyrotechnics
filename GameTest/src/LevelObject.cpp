@@ -10,7 +10,7 @@
 
 LevelObject::LevelObject(float scale, float xpos, float ypos, int z_index, std::weak_ptr<GameObject> parent) : GameObject(scale, xpos, ypos, z_index, parent)
 {
-    level = Level::LEVEL{0, 0, 0, nullptr};
+    level = Level::LEVEL{0, 0, 0, 0, 1.0f, nullptr};
 }
 
 float sigmoid(float x)
@@ -46,6 +46,9 @@ void LevelObject::LoadLevel(Level::LEVEL l)
     this->children.clear();
     level_state = LevelState::input;
     barrel_count = 0;
+    this->SetScale(level.scale);
+    this->goal_angle = level.angle % 4;
+    this->angle = 90.0f * goal_angle;
 
     this->AddBomb();
 
