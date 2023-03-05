@@ -21,6 +21,7 @@ float total_time = 0.0f;
 
 std::shared_ptr<GameObject> root;
 std::shared_ptr<LevelObject> lvl;
+int current_level;
 
 // enum
 // {
@@ -47,13 +48,14 @@ void Init()
 	// testSprite->CreateAnimation(ANIM_FORWARDS, speed, {24, 25, 26, 27, 28, 29, 30, 31});
 	// testSprite->SetScale(1.0f);
 	//------------------------------------------------------------------------
+	current_level = 0;
 
 	root = std::shared_ptr<GameObject>(new GameObject());
 	root->SetLocalPosition(400.0f, 400.0f);
 	root->SetScale(1.0f);
 
 	lvl = std::shared_ptr<LevelObject>(new LevelObject(1.0f, 0.0f, 0.0f, 0, root));
-	lvl->LoadLevel(Level::TUTORIAL_2);
+	lvl->LoadLevel(Level::levels[current_level]);
 	root->AddChild(lvl);
 }
 
@@ -141,7 +143,15 @@ void MoveToHighestValidManPos(int x, int y, int z) {
 		y--;
 	}
 	lvl->UpdateManPos(x,y,z);
+
+	if (lvl->GetBlockTypeAt(x,y-1,z) == Level::BlockType::door){
+		current_level += 1;
+		current_level %= Level::levels_size;
+
+		lvl->LoadLevel(Level::levels[current_level]);
+	}
 }
+
 void HandleBomb()
 {
 	if (lvl->GetLevelState() != LevelState::input)
@@ -216,6 +226,10 @@ void GameLogic()
 	{
 		lvl->RotateRight();
 	}
+	if (App::GetController().CheckButton(XINPUT_GAMEPAD_START, true))
+	{
+		lvl->LoadLevel(Level::levels[current_level]);
+	}
 }
 
 //------------------------------------------------------------------------
@@ -277,7 +291,7 @@ void Render()
 	char buffer[50];
 	std::snprintf(buffer, 50, "mouse x:%d y:%d \n man: x:%d y:%d", (int)mouse_x, (int)mouse_y, (int)man_screen_x, (int)man_screen_y);
 	App::Print(50, 50, buffer);
-
+	
 	App::GetMousePos(mouse_x, mouse_y);
 
 	//------------------------------------------------------------------------

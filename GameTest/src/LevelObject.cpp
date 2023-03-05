@@ -101,7 +101,7 @@ void LevelObject::AddMan(int x, int y, int z)
 
 void LevelObject::AddBomb()
 {
-    std::unique_ptr<CSimpleSprite> sprite = std::unique_ptr<CSimpleSprite>(App::CreateSprite("..\\assets\\bomb_upscale.bmp", 9, 1));
+    std::unique_ptr<CSimpleSprite> sprite = std::unique_ptr<CSimpleSprite>(App::CreateSprite(".\\assets\\bomb_upscale.bmp", 9, 1));
 
     // testSprite = App::CreateSprite(".\\TestData\\Test.bmp", 8, 4);
     // testSprite->SetPosition(400.0f, 400.0f);

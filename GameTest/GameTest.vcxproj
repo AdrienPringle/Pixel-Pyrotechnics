@@ -47,7 +47,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -214,6 +214,16 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GameTest.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\barrel.bmp" />
+    <Image Include="assets\blocks.bmp" />
+    <Image Include="assets\bomb.bmp" />
+    <Image Include="assets\bomb_upscale.bmp" />
+    <Image Include="assets\bricks.bmp" />
+    <Image Include="assets\door.bmp" />
+    <Image Include="assets\man.bmp" />
+    <Image Include="assets\spritesheet.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

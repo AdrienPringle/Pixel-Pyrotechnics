@@ -14,11 +14,11 @@ namespace Level
 
     static char *textures[] = {
         "",
-        "..\\assets\\blocks.bmp",
-        "..\\assets\\bricks.bmp",
-        "..\\assets\\door.bmp",
-        "..\\assets\\barrel.bmp",
-        "..\\assets\\man.bmp",
+        ".\\assets\\blocks.bmp",
+        ".\\assets\\bricks.bmp",
+        ".\\assets\\door.bmp",
+        ".\\assets\\barrel.bmp",
+        ".\\assets\\man.bmp",
     };
 
     typedef struct level
@@ -77,7 +77,7 @@ namespace Level
         2, 0, 0,   1, 0, 0,   2, 0, 0,    1, 0, 0,    2, 0, 0,    1, 0, 0,    2, 0, 0,   1, 1, 1,   0, 0, 0,
         2, 0, 0,   2, 0, 0,   2, 0, 0,    2, 0, 0,    2, 0, 0,    2, 0, 0,    2, 0, 0,   2, 0, 0,   0, 0, 0,
     };
-     static int FLAT_3_DATA[7 * 9 * 3] = {
+    static int FLAT_3_DATA[7 * 9 * 3] = {
         0, 0, 0,   0, 0, 0,   0, 0, 0,    2, 0, 0,    0, 0, 0,    3, 0, 0,    0, 0, 0,   0, 0, 0,   0, 0, 0,
         0, 0, 0,   0, 0, 0,   0, 0, 0,    1, 5, 0,    0, 0, 0,    1, 0, 0,    0, 0, 0,   0, 0, 0,   0, 0, 0,
         2, 0, 0,   2, 0, 0,   2, 0, 0,    2, 0, 0,    2, 0, 0,    2, 0, 0,    0, 0, 0,   2, 0, 0,   0, 0, 0,
@@ -89,7 +89,7 @@ namespace Level
 
     static LEVEL LEVEL_DEBUG = LEVEL{5, 3, 6, 0, 0.75f, LEVEL_DEBUG_DATA};
 
-    static LEVEL TUTORIAL_1 = LEVEL{5, 3, 5, 0, 0.6f, TUTORIAL_1_DATA};
+    static LEVEL TUTORIAL_1 = LEVEL{6, 3, 5, 0, 0.6f, TUTORIAL_1_DATA};
     static LEVEL TUTORIAL_2 = LEVEL{9, 6, 1, 0, 0.6f, TUTORIAL_2_DATA};
     static LEVEL TUTORIAL_3 = LEVEL{9, 7, 5, 0, 0.6f, TUTORIAL_3_DATA};
 
@@ -98,7 +98,7 @@ namespace Level
     static LEVEL FLAT_2 = LEVEL{9, 3, 7, 0, 0.6f, FLAT_2_DATA};
     static LEVEL FLAT_3 = LEVEL{9, 3, 7, 0, 0.6f, FLAT_3_DATA};
 
-    static int levels_size = 6;
-    static LEVEL levels[] = {TUTORIAL_1, TUTORIAL_2, TUTORIAL_3, FLAT_1, FLAT_2, FLAT_3};
+    const int levels_size = 6;
+    static LEVEL levels[levels_size] = {TUTORIAL_1, TUTORIAL_2, TUTORIAL_3, FLAT_1, FLAT_2, FLAT_3};
 };
 #endif
