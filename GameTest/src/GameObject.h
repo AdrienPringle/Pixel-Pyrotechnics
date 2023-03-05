@@ -18,6 +18,12 @@ public:
     void SetScale(float s);
     void SetZindex(int i);
 
+    void GetGlobalPosition(float &x, float &y)
+    {
+        x = global_xpos;
+        y = global_ypos;
+    }
+
 protected:
     // order to draw children is decided first by z index
     struct cmpStruct
@@ -47,11 +53,6 @@ protected:
     virtual int GetZindex() { return z_index; }
 
     float GetScale() const { return scale; }
-    void GetGlobalPosition(float &x, float &y)
-    {
-        x = global_xpos;
-        y = global_ypos;
-    }
 
     void PropagateGlobalPos();
     void PropagateGlobalScale();

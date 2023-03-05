@@ -22,6 +22,12 @@ const unsigned int HEX_WIDTH = 238;
 // 238 for full length
 // 168 for full height (almost exactly 1/sqrt(2) ratio)
 
+enum LevelState
+{
+    input,
+    transition,
+    win
+};
 
 class LevelObject : public GameObject
 {
@@ -31,16 +37,49 @@ public:
     void Update(float dt) override;
     void LoadLevel(Level::LEVEL l);
 
-    void SetAngle(float a);
+    void RotateLeft();
+    void RotateRight();
 
+    void UpdateManPos(int x, int y, int z);
+    void UpdateBombPos(int x, int y, int z, bool is_valid);
+    void ReduceBarrelCount() { barrel_count--; }
+
+    bool InRangeAt(int x, int y, int z);
+    void DeleteBlockAt(int x, int y, int z);
+    bool GetBlockAt(int x, int y, int z, std::shared_ptr<Item3D> &block);
+    Level::BlockType GetBlockTypeAt(int x, int y, int z);
+
+    void GetManPos(int &x, int &y, int &z);
+    void GetManScreenPos(float &x, float &y);
+    int GetGoalAngle() { return goal_angle; };
+    LevelState GetLevelState() { return level_state; };
 
 protected:
     Level::LEVEL level;
+    LevelState level_state;
     float angle;
+    int goal_angle; // 0 to 3 (every 90 degrees)
 
+    void SetAngle(float a);
     void AddBlock(int x, int y, int z, int type);
+    void AddMan(int x, int y, int z);
+    void AddBomb();
+    void TileToWorldCoords(float x, float y, float z, float &wx, float &wy, float &wz);
+
+    int GetBufferIndex(int x, int y, int z);
+
+    int barrel_count;
+
+    bool bomb_valid;
+    int bomb_x, bomb_y, bomb_z;
+    int man_x, man_y, man_z;
+    int man_x_old, man_y_old, man_z_old;
+    float transition_interp;
 
     std::weak_ptr<Item3D> level_buffer[LEVEL_BUFFER_SIZE];
+
+    std::shared_ptr<Item3D> man_model;
+    std::shared_ptr<Item3D> bomb_model;
 };
 
 #endif

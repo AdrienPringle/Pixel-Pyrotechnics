@@ -16,6 +16,7 @@ void SpriteObject::Update(float dt)
     GameObject::Update(dt);
     sprite->SetPosition(global_xpos, global_ypos);
     sprite->SetScale(global_scale * sprite_scale);
+    sprite->Update(dt);
 }
 
 void SpriteObject::Draw()
