@@ -245,29 +245,31 @@ void HandleEnd()
 	}
 }
 
-void HandleHud(){
+void HandleHud()
+{
 
 	int man_x, man_y, man_z;
 	lvl->GetManPos(man_x, man_y, man_z);
 
-	if (man_y <= 0 && lvl->GetLevelState() == LevelState::input) {
+	if (man_y <= 0 && lvl->GetLevelState() == LevelState::input)
+	{
 		hud->SetIsDown(true);
-	} else {
+	}
+	else
+	{
 		hud->SetIsDown(false);
 	}
 
-	if (lvl->GetLevelState() == LevelState::input){
+	if (lvl->GetLevelState() == LevelState::input)
+	{
 		hud->SetLevel(current_level);
 	}
 
 	hud->SetIsActive(lvl->GetLevelState() != LevelState::load);
 }
 
-void GameLogic()
+void HandleRotation()
 {
-	HandleBomb();
-	HandleEnd();
-	HandleHud();
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, true))
 	{
 		lvl->RotateLeft();
@@ -276,10 +278,23 @@ void GameLogic()
 	{
 		lvl->RotateRight();
 	}
+}
+
+void HandleReset()
+{
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_START, true))
 	{
 		lvl->UpdateLevel(Level::levels[current_level], ResetType::manual);
 	}
+}
+
+void GameLogic()
+{
+	HandleBomb();
+	HandleEnd();
+	HandleHud();
+	HandleRotation();
+	HandleReset();
 }
 
 //------------------------------------------------------------------------
@@ -306,10 +321,10 @@ void Update(float deltaTime)
 	//------------------------------------------------------------------------
 	// Sample Sound.
 	//------------------------------------------------------------------------
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_B, true))
-	{
-		App::PlaySound(".\\TestData\\Test.wav");
-	}
+	// if (App::GetController().CheckButton(XINPUT_GAMEPAD_B, true))
+	// {
+	// 	App::PlaySound(".\\TestData\\Test.wav");
+	// }
 
 	GameLogic();
 	root->Update(deltaTime);
