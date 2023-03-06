@@ -3,4 +3,5 @@
 #include "src\Level.h"
 #include "src\LevelObject.h"
 #include "src\Item3D.h"
+#include "src\Hud.h"
 

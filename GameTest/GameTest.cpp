@@ -51,7 +51,7 @@ void Init()
 	current_level = 0;
 
 	root = std::shared_ptr<GameObject>(new GameObject());
-	root->SetLocalPosition(400.0f, 400.0f);
+	root->SetLocalPosition(1024.0f / 2, 768.0f / 2);
 	root->SetScale(1.0f);
 
 	lvl = std::shared_ptr<LevelObject>(new LevelObject(1.0f, 0.0f, 0.0f, 0, root));
@@ -102,19 +102,22 @@ void GetMouseDirection(int &x, int &z)
 	}
 }
 
-bool GetValidBombHeight(int bomb_x, int bomb_z, int &y) {
+bool GetValidBombHeight(int bomb_x, int bomb_z, int &y)
+{
 	int man_x, man_y, man_z;
 	lvl->GetManPos(man_x, man_y, man_z);
 
 	std::shared_ptr<Item3D> block;
 	bool in_range = lvl->InRangeAt(bomb_x, man_y, bomb_z);
-	if (!in_range) return false;
+	if (!in_range)
+		return false;
 
 	bool is_valid_block = lvl->GetBlockAt(bomb_x, man_y, bomb_z, block);
 	if (is_valid_block)
 	{
-		//block exists, proceed to look up
-		do {
+		// block exists, proceed to look up
+		do
+		{
 			man_y += 1;
 			in_range = lvl->InRangeAt(bomb_x, man_y, bomb_z);
 			is_valid_block = lvl->GetBlockAt(bomb_x, man_y, bomb_z, block);
@@ -124,7 +127,8 @@ bool GetValidBombHeight(int bomb_x, int bomb_z, int &y) {
 	}
 
 	// otherwise, block doesn't exist. proceed to look down
-	do {
+	do
+	{
 		man_y -= 1;
 		in_range = lvl->InRangeAt(bomb_x, man_y, bomb_z);
 		is_valid_block = lvl->GetBlockAt(bomb_x, man_y, bomb_z, block);
@@ -133,16 +137,19 @@ bool GetValidBombHeight(int bomb_x, int bomb_z, int &y) {
 	return in_range;
 }
 
-void MoveToHighestValidManPos(int x, int y, int z) {
+void MoveToHighestValidManPos(int x, int y, int z)
+{
 	std::shared_ptr<Item3D> tmp;
-	while(!lvl->GetBlockAt(x, y-1, z, tmp)){
-		if(y <= 1) {
+	while (!lvl->GetBlockAt(x, y - 1, z, tmp))
+	{
+		if (y <= 1)
+		{
 			lvl->UpdateManPos(x, -1, z, true);
 			return;
 		}
 		y--;
 	}
-	lvl->UpdateManPos(x,y,z, true);
+	lvl->UpdateManPos(x, y, z, true);
 }
 
 void HandleBomb()
@@ -157,16 +164,19 @@ void HandleBomb()
 	GetMouseDirection(dx, dz);
 
 	int bomb_y;
-	bool is_valid = GetValidBombHeight(man_x+dx, man_z+dz, bomb_y);
+	bool is_valid = GetValidBombHeight(man_x + dx, man_z + dz, bomb_y);
 	lvl->UpdateBombPos(man_x + dx, bomb_y, man_z + dz, is_valid);
 
 	if (is_valid && App::GetController().CheckButton(XINPUT_GAMEPAD_A, true))
 	{
 		// HandleBombPlace();
 		Level::BlockType b = lvl->GetBlockTypeAt(man_x + dx, bomb_y - 1, man_z + dz);
-		if(b == Level::BlockType::brick) {
+		if (b == Level::BlockType::brick)
+		{
 			lvl->DeleteBlockAt(man_x + dx, bomb_y - 1, man_z + dz);
-		} else if (b == Level::BlockType::barrel) {
+		}
+		else if (b == Level::BlockType::barrel)
+		{
 			lvl->DeleteBlockAt(man_x + dx, bomb_y - 1, man_z + dz);
 			lvl->ReduceBarrelCount();
 		}
@@ -178,47 +188,55 @@ void HandleBomb()
 
 		// blocking (2)
 		//     =
-		// o x 
+		// o x
 		// = = = =
 
 		// not blocking
 		//     x
 		// o = =
-		// = = = 
+		// = = =
 		std::shared_ptr<Item3D> tmp;
-		if (bomb_y != man_y){
+		if (bomb_y != man_y)
+		{
 			lvl->UpdateManPos(man_x, man_y, man_z, false);
 			return;
 		}
-		if (dx == 0 && dz == 0) {
+		if (dx == 0 && dz == 0)
+		{
 			MoveToHighestValidManPos(man_x, man_y, man_z);
 			return;
 		}
 
-		if (lvl->GetBlockAt(man_x - dx, bomb_y + 1, man_z - dz, tmp)){
+		if (lvl->GetBlockAt(man_x - dx, bomb_y + 1, man_z - dz, tmp))
+		{
 			MoveToHighestValidManPos(man_x, man_y, man_z);
 			return;
 		}
 
-		if (lvl->GetBlockAt(man_x - 2*dx, bomb_y + 1, man_z - 2*dz, tmp)){
+		if (lvl->GetBlockAt(man_x - 2 * dx, bomb_y + 1, man_z - 2 * dz, tmp))
+		{
 			MoveToHighestValidManPos(man_x - dx, man_y + 1, man_z - dz);
 			return;
 		}
-		MoveToHighestValidManPos(man_x - 2*dx, man_y + 1, man_z - 2*dz);
-
+		MoveToHighestValidManPos(man_x - 2 * dx, man_y + 1, man_z - 2 * dz);
 	}
 }
 
-void HandleEnd(){
-	if (lvl->GetLevelState() != LevelState::input) return;
-	
+void HandleEnd()
+{
+	if (lvl->GetLevelState() != LevelState::input)
+		return;
+	if (lvl->GetBarrelCount() != 0)
+		return;
+
 	int man_x, man_y, man_z;
 	lvl->GetManPos(man_x, man_y, man_z);
-	if (lvl->GetBlockTypeAt(man_x,man_y-1,man_z) == Level::BlockType::door){
+	if (lvl->GetBlockTypeAt(man_x, man_y - 1, man_z) == Level::BlockType::door)
+	{
 		current_level += 1;
 		current_level %= Level::levels_size;
 
-		lvl->LoadLevel(Level::levels[current_level]);
+		lvl->UpdateLevel(Level::levels[current_level], ResetType::win);
 	}
 }
 
@@ -236,7 +254,7 @@ void GameLogic()
 	}
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_START, true))
 	{
-		lvl->LoadLevel(Level::levels[current_level]);
+		lvl->UpdateLevel(Level::levels[current_level], ResetType::manual);
 	}
 }
 
@@ -289,18 +307,16 @@ void Render()
 	//------------------------------------------------------------------------
 	// Example Text.
 	//------------------------------------------------------------------------
-	App::Print(100, 100, "Sample Text");
+	// App::Print(100, 100, "Sample Text");
 
-	float man_screen_x, man_screen_y;
-	float mouse_x, mouse_y;
-	lvl->GetManScreenPos(man_screen_x, man_screen_y);
-	App::GetMousePos(mouse_x, mouse_y);
+	// float man_screen_x, man_screen_y;
+	// float mouse_x, mouse_y;
+	// lvl->GetManScreenPos(man_screen_x, man_screen_y);
+	// App::GetMousePos(mouse_x, mouse_y);
 
-	char buffer[50];
-	std::snprintf(buffer, 50, "mouse x:%d y:%d \n man: x:%d y:%d", (int)mouse_x, (int)mouse_y, (int)man_screen_x, (int)man_screen_y);
-	App::Print(50, 50, buffer);
-
-	App::GetMousePos(mouse_x, mouse_y);
+	// char buffer[50];
+	// std::snprintf(buffer, 50, "mouse x:%d y:%d \n man: x:%d y:%d", (int)mouse_x, (int)mouse_y, (int)man_screen_x, (int)man_screen_y);
+	// App::Print(50, 50, buffer);
 
 	//------------------------------------------------------------------------
 	// Example Line Drawing.

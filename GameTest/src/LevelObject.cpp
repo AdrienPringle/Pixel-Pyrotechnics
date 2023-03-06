@@ -18,7 +18,8 @@ float sigmoid(float x)
     return x / (1 + abs(x));
 }
 
-void LevelObject::HandleTransition(float dt){
+void LevelObject::HandleTransition(float dt)
+{
     this->transition_interp += dt / 400;
 
     if (this->transition_interp >= 1)
@@ -26,13 +27,14 @@ void LevelObject::HandleTransition(float dt){
         this->transition_interp = 1;
         this->level_state = LevelState::input;
     }
-    
+
     const int bomb_anim_len = 12;
-    int bomb_anim[bomb_anim_len] = {2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 0, 0 };
+    int bomb_anim[bomb_anim_len] = {2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 0, 0};
     this->bomb_model->SetFrame(bomb_anim[(int)(this->transition_interp * bomb_anim_len)]);
 
     float x, y, z;
-    if (!this->man_move) {
+    if (!this->man_move)
+    {
         x = man_x;
         y = man_y;
         z = man_z;
@@ -48,13 +50,69 @@ void LevelObject::HandleTransition(float dt){
     {
         float i = (transition_interp - 0.75f) / 0.25f;
         x = man_x;
-        y = man_y_old + 2 + i*i * (man_y - man_y_old - 2);
+        y = man_y_old + 2 + i * i * (man_y - man_y_old - 2);
         z = man_z;
     }
 
     float blockx, blocky, blockz;
     this->TileToWorldCoords(x, y, z, blockx, blocky, blockz);
     this->man_model->Set3Dposition(blockx, blocky, blockz);
+}
+
+void LevelObject::HandleLevelTransitionManual(float dt)
+{
+    this->transition_interp += dt / 600;
+
+    if (this->transition_interp >= 1)
+    {
+        this->transition_interp = 1;
+        this->level_state = LevelState::input;
+    }
+
+    if (this->transition_interp < 0.5f)
+    {
+        float i = transition_interp / 0.5f;
+        this->SetLocalPosition(0, i * i  * 1000);
+    }
+    else
+    {
+        if (!this->level_loaded)
+        {
+            this->level_loaded = true;
+            this->LoadLevel(this->buffer_level);
+        }
+        float i = (transition_interp - 0.5f) / 0.5f;
+        this->SetLocalPosition(0, -(i - 1) * (i - 1) * 1000);
+    }
+}
+
+void LevelObject::HandleLevelTransitionWin(float dt)
+{
+    this->transition_interp += dt / 5000;
+
+    if (this->transition_interp >= 1)
+    {
+        this->transition_interp = 1;
+        this->level_state = LevelState::input;
+    }
+
+    const float phase1 = 0.9f;
+    if (this->transition_interp < phase1)
+    {
+        float i = transition_interp / phase1;
+        this->SetLocalPosition(0, i * i * i * i * 1000);
+        this->SetAngle(i * i * i * 360 * 4 + 90 * this->goal_angle);
+    }
+    else
+    {
+        if (!this->level_loaded)
+        {
+            this->level_loaded = true;
+            this->LoadLevel(this->buffer_level);
+        }
+        float i = (transition_interp - phase1) / (1 - phase1);
+        this->SetLocalPosition(0, -(i - 1) * (i - 1) * 1000);
+    }
 }
 
 void LevelObject::Update(float dt)
@@ -78,8 +136,28 @@ void LevelObject::Update(float dt)
     {
         this->HandleTransition(dt);
     }
+    else if (level_state == LevelState::load)
+    {
+        if (this->reset_type == ResetType::win)
+        {
+            this->HandleLevelTransitionWin(dt);
+        }
+        else
+        {
+            this->HandleLevelTransitionManual(dt);
+        }
+    }
 
     GameObject::Update(dt);
+}
+
+void LevelObject::UpdateLevel(Level::LEVEL l, ResetType type)
+{
+    this->level_state = LevelState::load;
+    this->buffer_level = l;
+    this->transition_interp = 0;
+    this->level_loaded = false;
+    this->reset_type = type;
 }
 
 void LevelObject::LoadLevel(Level::LEVEL l)
@@ -88,11 +166,11 @@ void LevelObject::LoadLevel(Level::LEVEL l)
 
     this->level = l;
     this->children.clear();
-    this->level_state = LevelState::input;
+    // this->level_state = LevelState::input;
     this->barrel_count = 0;
     this->goal_angle = level.angle % 4;
     this->angle = 90.0f * goal_angle;
-    this->transition_interp = 0;
+    // this->transition_interp = 0;
 
     this->SetScale(level.scale);
 
@@ -322,7 +400,8 @@ void LevelObject::UpdateManPos(int x, int y, int z, bool move)
 
 void LevelObject::UpdateBombPos(int x, int y, int z, bool is_valid)
 {
-    if (this->level_state == LevelState::transition){
+    if (this->level_state == LevelState::transition)
+    {
         return;
     }
     if (!is_valid)

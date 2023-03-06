@@ -26,7 +26,12 @@ enum LevelState
 {
     input,
     transition,
-    win
+    load
+};
+
+enum ResetType{
+    win, 
+    manual,
 };
 
 class LevelObject : public GameObject
@@ -36,6 +41,7 @@ public:
 
     void Update(float dt) override;
     void LoadLevel(Level::LEVEL l);
+    void UpdateLevel(Level::LEVEL l, ResetType type);
 
     void RotateLeft();
     void RotateRight();
@@ -52,15 +58,23 @@ public:
     void GetManPos(int &x, int &y, int &z);
     void GetManScreenPos(float &x, float &y);
     int GetGoalAngle() { return goal_angle; };
+    int GetBarrelCount() { return barrel_count; };
     LevelState GetLevelState() { return level_state; };
 
 protected:
     Level::LEVEL level;
+    Level::LEVEL buffer_level;
+    bool level_loaded;
+    ResetType reset_type;
+
     LevelState level_state;
     float angle;
     int goal_angle; // 0 to 3 (every 90 degrees)
 
     void HandleTransition(float dt);
+    void HandleLevelTransitionManual(float dt);
+    void HandleLevelTransitionWin(float dt);
+
     void SetAngle(float a);
     void AddBlock(int x, int y, int z, int type);
     void AddMan(int x, int y, int z);
