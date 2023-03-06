@@ -24,6 +24,12 @@ public:
         y = global_ypos;
     }
 
+    void GetLocalPosition(float &x, float &y)
+    {
+        x = xpos;
+        y = ypos;
+    }
+
 protected:
     // order to draw children is decided first by z index
     struct cmpStruct

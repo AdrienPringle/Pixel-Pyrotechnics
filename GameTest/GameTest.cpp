@@ -21,6 +21,7 @@ float total_time = 0.0f;
 
 std::shared_ptr<GameObject> root;
 std::shared_ptr<LevelObject> lvl;
+std::shared_ptr<Hud> hud;
 int current_level;
 
 // enum
@@ -54,9 +55,13 @@ void Init()
 	root->SetLocalPosition(1024.0f / 2, 768.0f / 2);
 	root->SetScale(1.0f);
 
-	lvl = std::shared_ptr<LevelObject>(new LevelObject(1.0f, 0.0f, 0.0f, 0, root));
+	lvl = std::shared_ptr<LevelObject>(new LevelObject(1.0f, 0.0f, 0.0f, 10, root));
 	lvl->LoadLevel(Level::levels[current_level]);
 	root->AddChild(lvl);
+
+	hud = std::shared_ptr<Hud>(new Hud(1024, 768, root));
+	root->AddChild(hud);
+	hud->Init();
 }
 
 void GetMouseDirection(int &x, int &z)
@@ -240,10 +245,29 @@ void HandleEnd()
 	}
 }
 
+void HandleHud(){
+
+	int man_x, man_y, man_z;
+	lvl->GetManPos(man_x, man_y, man_z);
+
+	if (man_y <= 0 && lvl->GetLevelState() == LevelState::input) {
+		hud->SetIsDown(true);
+	} else {
+		hud->SetIsDown(false);
+	}
+
+	if (lvl->GetLevelState() == LevelState::input){
+		hud->SetLevel(current_level);
+	}
+
+	hud->SetIsActive(lvl->GetLevelState() != LevelState::load);
+}
+
 void GameLogic()
 {
 	HandleBomb();
 	HandleEnd();
+	HandleHud();
 	if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, true))
 	{
 		lvl->RotateLeft();
