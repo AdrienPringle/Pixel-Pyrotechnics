@@ -84,7 +84,7 @@ void GetMouseDirection(int &x, int &z)
 
 	bool is_up = mouse_y > man_screen_y;
 	bool is_right = mouse_x > man_screen_x;
-	int quadrant = 2 * !is_up + (is_up ? is_right : !is_right) + lvl->GetGoalAngle();
+	unsigned int quadrant = 2 * !is_up + (is_up ? is_right : !is_right) + lvl->GetGoalAngle();
 
 	switch (quadrant % 4)
 	{
