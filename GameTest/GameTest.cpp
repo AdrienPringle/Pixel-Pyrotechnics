@@ -49,6 +49,9 @@ void Init()
 	// testSprite->CreateAnimation(ANIM_FORWARDS, speed, {24, 25, 26, 27, 28, 29, 30, 31});
 	// testSprite->SetScale(1.0f);
 	//------------------------------------------------------------------------
+	
+	Level::ReadLevelsFromFile(Level::levels, Level::levels_size);
+	
 	current_level = 0;
 
 	root = std::shared_ptr<GameObject>(new GameObject());

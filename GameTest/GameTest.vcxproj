@@ -119,6 +119,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -205,6 +206,7 @@
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\Hud.cpp" />
     <ClCompile Include="src\Item3D.cpp" />
+    <ClCompile Include="src\Level.cpp" />
     <ClCompile Include="src\LevelObject.cpp" />
     <ClCompile Include="src\SpriteObject.cpp" />
     <ClCompile Include="stdafx.cpp">

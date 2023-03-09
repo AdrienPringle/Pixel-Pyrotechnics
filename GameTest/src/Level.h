@@ -1,6 +1,8 @@
 #ifndef _LEVEL_H
 #define _LEVEL_H
 
+#include <vector>
+
 namespace Level
 {
     enum BlockType {
@@ -110,8 +112,16 @@ namespace Level
 
     static LEVEL LINE = LEVEL{9, 6, 1, 0, 0.5f, LINE_DATA};
 
+    const int l2 = 5;
+    static int levels_size = 6;
+    static LEVEL l[6] = {TUTORIAL_1, TUTORIAL_2, TUTORIAL_3, LINE, FLAT_2, FLAT_3};
+    static LEVEL level_buf[100]; // a shit ton of levels
+    // static LEVEL *levels = l;
+    static LEVEL * levels = level_buf;
+    static int level_data_buf[1000 * 10]; // if all levels are max size, max of 10 levels ig
 
-    const int levels_size = 6;
-    static LEVEL levels[levels_size] = {TUTORIAL_1, TUTORIAL_2, TUTORIAL_3, LINE, FLAT_2, FLAT_3};
+    void ReadLevelsFromFile(LEVEL* &l, int &len);
+
+    
 };
 #endif
