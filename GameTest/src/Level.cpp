@@ -18,6 +18,7 @@ namespace Level {
         LEVEL new_level;
         bool is_start = true;
         int x, y, z;
+        float scale;
         std::string line;
 
 
@@ -38,8 +39,8 @@ namespace Level {
                 continue;
             }
             else if (is_start) {
-                if (!(iss >> x >> y >> z)) { throw "line 1 needs 3 numbers"; } // error
-                new_level = LEVEL{ x, y, z, 0, 0.5f, &level_data_buf[buf_offset] };
+                if (!(iss >> x >> y >> z >> scale)) { throw "line 1 needs 3 numbers"; } // error
+                new_level = LEVEL{ x, y, z, 0, scale, &level_data_buf[buf_offset] };
                 is_start = false;
                 continue;
             }
