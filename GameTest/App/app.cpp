@@ -42,16 +42,18 @@ namespace App
 	void GetMousePos(float &x, float &y)
 	{
 		POINT mousePos;
-		GetCursorPos(&mousePos);	// Get the mouse cursor 2D x,y position			
+		GetCursorPos(&mousePos);	// Get the mouse cursor 2D x,y position		
 		ScreenToClient(MAIN_WINDOW_HANDLE, &mousePos);
 		x = (float)mousePos.x;
 		y = (float)mousePos.y;
-		x = (x * (2.0f / WINDOW_WIDTH) - 1.0f);
-		y = -(y * (2.0f / WINDOW_HEIGHT) - 1.0f);
+		x = ((x) * (2.0f / WINDOW_WIDTH) - 1.0f);
+		y = -((y) * (2.0f / WINDOW_HEIGHT) - 1.0f);
 
 #if APP_USE_VIRTUAL_RES		
 		APP_NATIVE_TO_VIRTUAL_COORDS(x, y);
 #endif
+		x -= WINDOW_DX * APP_VIRTUAL_WIDTH / WINDOW_WIDTH; 
+		y += WINDOW_DY * APP_VIRTUAL_WIDTH / WINDOW_WIDTH;
 	}
 	void PlaySound(const char *fileName, bool looping)
 	{

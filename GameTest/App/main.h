@@ -7,6 +7,8 @@
 
 extern int WINDOW_WIDTH;
 extern int WINDOW_HEIGHT;
+extern int WINDOW_DX;
+extern int WINDOW_DY;
 extern HWND MAIN_WINDOW_HANDLE;
 
 #endif

@@ -19,6 +19,10 @@
 //---------------------------------------------------------------------------------
 int WINDOW_WIDTH = APP_INIT_WINDOW_WIDTH;
 int WINDOW_HEIGHT = APP_INIT_WINDOW_HEIGHT;
+
+int WINDOW_DX = 0;
+int WINDOW_DY = 0;
+
 HWND MAIN_WINDOW_HANDLE = nullptr;
 
 //---------------------------------------------------------------------------------
@@ -118,6 +122,37 @@ void Display()
 	glFlush();  // Render now						 
 }
 
+void Reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integer
+	// Compute aspect ratio of the new window
+	if (height == 0) height = 1;                // To prevent divide by 0
+
+	GLfloat aspect = (GLfloat)width / (GLfloat)height;
+	GLfloat global_aspect = (GLfloat) APP_VIRTUAL_WIDTH / (GLfloat) APP_VIRTUAL_HEIGHT;
+
+	WINDOW_DX = 0;
+	WINDOW_DY = 0;
+
+	if (aspect < global_aspect) {
+		// height is too big
+		GLsizei old_height = height;
+		height = width / global_aspect;
+		WINDOW_DY = (old_height - height)/2;
+
+	} else {
+		// width is too big
+		GLsizei old_width = width;
+		width = height * global_aspect;
+		WINDOW_DX = (old_width - width)/2;
+
+	}
+
+	// Set the viewport to cover the new window
+	glViewport(WINDOW_DX, WINDOW_DY, width, height);
+
+	WINDOW_WIDTH = width;
+	WINDOW_HEIGHT = height;
+}
+
 //---------------------------------------------------------------------------------
 // Update from glut. Called when no more event handling.
 //---------------------------------------------------------------------------------
@@ -142,8 +177,8 @@ void Idle()
 		RECT tileClientArea;
 		if (GetClientRect( MAIN_WINDOW_HANDLE, &tileClientArea))
 		{
-			WINDOW_WIDTH = tileClientArea.right - tileClientArea.left;
-			WINDOW_HEIGHT = tileClientArea.bottom - tileClientArea.top;
+			// WINDOW_WIDTH = tileClientArea.right - tileClientArea.left;
+			// WINDOW_HEIGHT = tileClientArea.bottom - tileClientArea.top;
 		}
 
 		if (App::GetController().CheckButton(APP_ENABLE_DEBUG_INFO_BUTTON) )
@@ -183,6 +218,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, 	_In_opt_ HINSTANCE hPrevInstanc
 	MAIN_WINDOW_HANDLE = WindowFromDC(dc);
 	glutIdleFunc(Idle);
 	glutDisplayFunc(Display);       // Register callback handler for window re-paint event	
+	glutReshapeFunc(Reshape);       // Register callback handler for window re-size event
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 	InitGL();                       // Our own OpenGL initialization
 
