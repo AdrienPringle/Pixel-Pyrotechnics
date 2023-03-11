@@ -28,9 +28,9 @@ void LevelObject::HandleTransition(float dt)
         this->level_state = LevelState::input;
     }
 
-    const int bomb_anim_len = 12;
-    int bomb_anim[bomb_anim_len] = {2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 0, 0};
-    this->bomb_model->SetFrame(bomb_anim[(int)(this->transition_interp * bomb_anim_len)]);
+    const int bomb_anim_len = 30;
+    const int bomb_anim_start = 2;
+    this->bomb_model->SetFrame(bomb_anim_start + (int)(this->transition_interp * (bomb_anim_len - 1)));
 
     float x, y, z;
     if (!this->man_move)
@@ -72,7 +72,7 @@ void LevelObject::HandleLevelTransitionManual(float dt)
     if (this->transition_interp < 0.5f)
     {
         float i = transition_interp / 0.5f;
-        this->SetLocalPosition(0, i * i  * 1000);
+        this->SetLocalPosition(0, i * i * 1000);
     }
     else
     {
@@ -225,7 +225,7 @@ void LevelObject::AddMan(int x, int y, int z)
 
 void LevelObject::AddBomb()
 {
-    std::unique_ptr<CSimpleSprite> sprite = std::unique_ptr<CSimpleSprite>(App::CreateSprite(".\\assets\\bomb_upscale.bmp", 9, 1));
+    std::unique_ptr<CSimpleSprite> sprite = std::unique_ptr<CSimpleSprite>(App::CreateSprite(".\\assets\\bomb.bmp", 32, 1));
 
     // testSprite = App::CreateSprite(".\\TestData\\Test.bmp", 8, 4);
     // testSprite->SetPosition(400.0f, 400.0f);
@@ -241,7 +241,6 @@ void LevelObject::AddBomb()
 
     std::shared_ptr<Item3D> bomb = std::shared_ptr<Item3D>(new Item3D(0.0f, 0.0f, 0.0f, 0, shared_from_this(), move(sprite)));
     bomb->SetFrame(1);
-    bomb->SetScale(2);
 
     this->AddChild(bomb);
     this->bomb_model = bomb;
@@ -406,16 +405,15 @@ void LevelObject::UpdateBombPos(int x, int y, int z, bool is_valid)
     }
     if (!is_valid)
     {
-        this->bomb_model->SetFrame(0);
+        this->bomb_model->SetFrame(1);
         return;
     }
-    this->bomb_model->SetFrame(1);
+    this->bomb_model->SetFrame(0);
     bomb_x = x;
     bomb_y = y;
     bomb_z = z;
 
     float blockx, blocky, blockz;
     this->TileToWorldCoords(x, y, z, blockx, blocky, blockz);
-
     this->bomb_model->Set3Dposition(blockx, blocky, blockz);
 }
