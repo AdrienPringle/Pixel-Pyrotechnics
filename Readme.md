@@ -1,4 +1,4 @@
-# Pixel Pyrotechnics
+![Banner](./banner.png)
 
 Submission to Ubisoft Toronto Next 2023
 
@@ -29,7 +29,7 @@ To create a standalone runnable build, copy the `assets` folder into the same di
 
 `src/LevelObject.cpp` : inherits from `GameObject`, contains level state and manages all 3D sprites
 
-`src/SpriteObject.cpp` : inherits from `GameObject`, wrapper for a single sprite with a local anf global position
+`src/SpriteObject.cpp` : inherits from `GameObject`, wrapper for a single sprite with a local and global position
 
 `src/Item3D.cpp` : inherits from `SpriteObject`, contains 3d state and handles conversion from world to screen coordinates
 
