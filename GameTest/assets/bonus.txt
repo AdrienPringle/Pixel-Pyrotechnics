@@ -1,0 +1,33 @@
+# #####################################################
+# 
+# Credits:
+# Made by Adrien Pringle (https://apringle.dev)
+# and also Kybre (https://kybre.github.io)
+# 
+# File format:
+# 
+# first 3 numbers on first line are x y z size
+# 4th is level scale
+#
+# level data max length: 1000 blocks
+# air = 0
+# block = 1
+# brick = 2
+# door = 3
+# barrel = 4
+# man = 5
+#
+# levels are ended by =
+# the last = is necessary because im a bad programmer
+#
+# #####################################################
+
+
+7 5 4 0.5
+
+1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 3 0 0    1 2 2 0 0    
+1 2 2 0 0    1 2 2 0 0    1 2 2 5 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 2 2    
+1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    
+1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    1 2 2 0 0    
+
+=
