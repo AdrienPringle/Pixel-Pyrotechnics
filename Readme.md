@@ -1,9 +1,15 @@
-# Ubisoft Toronto Next 2023 submission
+# Pixel Pyrotechnics
+
+Submission to Ubisoft Toronto Next 2023
 
 ## Play game
 
-`x64/Release` contains a working game executable
+https://chip2222.itch.io/pixel-pyrotechnics
 
+## Build game
+
+Open GameTest.sln in Visual Studio 2019, and run in debug or release mode.
+To create a standalone runnable build, copy the `assets` folder into the same directory as the executable.
 
 ## File structure
 
